@@ -1,6 +1,8 @@
 .gradle
 build/
-
+.idea/
+*.iml
+.nb-gradle/
 # Ignore Gradle GUI config
 gradle-app.setting
 
@@ -16,7 +18,8 @@ gradle-app.setting
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
