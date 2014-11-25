@@ -36,20 +36,25 @@ class ExchangeTest extends Specification {
         factory.setUri("amqp://guest:password@localhost:${amqpPort}")
         factory.useSslProtocol()
 
+        log.info(" ***** creating connection")
         def connection = factory.newConnection()
+        log.info(" ***** creating channels")
         def channel = connection.createChannel();
         def channel2 = connection.createChannel();
         log.info " ***** declaring exchange of type topic -> ${TOPIC_NAME}"
         channel.exchangeDeclare(TOPIC_NAME, "topic", true)
 
-        def THE_DESTINATION = "destination"
-        log.info " ***** binding to exchange of -> ${TOPIC_NAME}"
-        AMQP.Exchange.BindOk ok = channel2.exchangeBind(THE_DESTINATION, TOPIC_NAME, '*.sports.news')
+
+        def queueName = channel.queueDeclare().getQueue()
+        log.info " ***** binding to exchange of -> ${TOPIC_NAME} ; ${queueName}"
+
+
+        def ok = channel2.queueBind(queueName, TOPIC_NAME, '*.sports.news', null)
         log.info ("okay=${ok}")
         //System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         QueueingConsumer consumer = new QueueingConsumer(channel2);
-        channel.basicConsume(THE_DESTINATION, true, consumer);
+        channel2.basicConsume(queueName, true, consumer);
 
         when:
 
