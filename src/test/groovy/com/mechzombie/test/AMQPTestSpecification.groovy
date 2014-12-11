@@ -3,26 +3,26 @@ package com.mechzombie.test
 import com.google.common.io.Files
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
+import groovy.util.logging.Log
 import org.apache.commons.io.FileUtils
 import org.apache.qpid.server.Broker
 import org.apache.qpid.server.BrokerOptions
+import spock.lang.Shared
 import spock.lang.Specification
 
 
-/**
- * Created by David on 12/10/2014.
- */
+@Log
 class AMQPTestSpecification extends Specification {
 
-    def tmpFolder = Files.createTempDir()
-    Broker broker
+    @Shared def tmpFolder = Files.createTempDir()
+    @Shared Broker broker
     ConnectionFactory factory
 
-    def amqpPort = 9234
-    def httpPort = 9235
+    @Shared def amqpPort = 9234
+    @Shared def httpPort = 9235
 
-    def qpidHomeDir = 'src/test/resources/'
-    def configFileName = "/test-config.json"
+    @Shared def qpidHomeDir = 'src/test/resources/'
+    @Shared def configFileName = "/test-config.json"
 
     Connection getConection() {
         if (!factory) {
@@ -37,7 +37,7 @@ class AMQPTestSpecification extends Specification {
         "amqp://guest:password@localhost:${amqpPort}"
     }
 
-    void setup() {
+    void setupSpec() {
         broker = new Broker();
         def brokerOptions = new BrokerOptions()
 
@@ -59,7 +59,7 @@ class AMQPTestSpecification extends Specification {
 
     }
 
-    void cleanup() {
+    void cleanupSpec() {
         broker.shutdown()
         FileUtils.deleteDirectory(tmpFolder)
     }

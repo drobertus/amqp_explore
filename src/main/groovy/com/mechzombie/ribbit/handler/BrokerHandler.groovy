@@ -3,6 +3,7 @@ package com.mechzombie.ribbit.handler
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.QueueingConsumer
+import com.rabbitmq.client.impl.Method
 import groovy.util.logging.Log
 
 @Log
@@ -27,25 +28,49 @@ class BrokerHandler {
 
             def channel = connection.createChannel()
             channel.exchangeDeclare(exchangeName, type.name(), true)
-            def queueName = channel.queueDeclare().getQueue()
-            wrapper = new ExchangeWrapper(channel: channel, queueName: queueName,
+            //def queueName = channel.queueDeclare().getQueue()
+            wrapper = new ExchangeWrapper(channel: channel,
                 exchangeName: exchangeName)
             knownExchanges.put(exchangeName, wrapper)
+            //println()
         }
 
         return wrapper
     }
 
-    QueueingConsumer getExchangeConsumer(ExchangeWrapper wrapper, String route) {
+    def doesExchangeExist(String exchangeName) {
+        def channel = connection.createChannel()
+        try {
+            def ok = channel.exchangeDeclarePassive(exchangeName)
+            //channel.queueDeclare()
+            println("ok returned = ${ok}")
+            return true
+        }catch (Exception ioe) {
+            log.info("error on passive exchange declaration: ${ioe}")
+        }
+        return false
+    }
+
+    QueueingConsumer getExchangeConsumer(String name, ExchangeType type, String route) {
+        def wrapper = this.knownExchanges[name]
+
+        if(!wrapper && !doesExchangeExist(name)) {
+            wrapper = getExchangeWrapper(name, type, true)
+        }
+        getExchangeConsumer(wrapper, route)
+
+    }
+
+    QueueingConsumer getExchangeConsumer(String exchangeName, String queueToBind, String route) {
 
         def channel = connection.createChannel()
 
-
-        def ok = channel.queueBind(wrapper.queueName, wrapper.exchangeName, route, null)
+        def declareOk = channel.queueDeclare(queueToBind,true, true, true, null)
+        def ok = channel.queueBind(queueToBind, exchangeName, route, null)
         log.info ("okay=${ok}")
 
         QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicConsume(wrapper.queueName, true, consumer);
+        channel.basicConsume(queueToBind, true, consumer);
 
         //TODO: this channel is orphaned from the consumer.
         return consumer

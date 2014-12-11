@@ -1,11 +1,14 @@
 package com.mechzombie.ribbit.handler
 
 import com.mechzombie.test.AMQPTestSpecification
+import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.QueueingConsumer
 import groovy.util.logging.Log
 
+import static junit.framework.Assert.assertFalse
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertNull
+import static org.junit.Assert.assertTrue
 
 
 @Log
@@ -17,8 +20,8 @@ class BrokerHandlerTest extends AMQPTestSpecification {
         setup:
          def handler = new BrokerHandler(this.getConection())
         ExchangeWrapper wrapper = handler.getExchangeWrapper('XCHANGE', ExchangeType.topic, true)
-
-        QueueingConsumer consumer = handler.getExchangeConsumer(wrapper, '*.weather.us')
+        def queueToListen = 'queue1'
+        QueueingConsumer consumer = handler.getExchangeConsumer( 'XCHANGE',queueToListen, '*.weather.us')
 
         when:
             wrapper.writeToExchange('news.weather.us', 'TaDA')
@@ -27,7 +30,7 @@ class BrokerHandlerTest extends AMQPTestSpecification {
             assertEquals 'TaDA', new String( msg.body)
 
         when:
-        QueueingConsumer consumer2 = handler.getExchangeConsumer(wrapper, '*.weather.ca')
+        QueueingConsumer consumer2 = handler.getExchangeConsumer(wrapper.exchangeName, 'caQ', '*.weather.ca')
             wrapper.writeToExchange('news.weather.ca', 'TEST')
 
         then:
@@ -37,5 +40,37 @@ class BrokerHandlerTest extends AMQPTestSpecification {
 
             assertEquals 'TEST', new String( msg3.body)
 
+    }
+
+    def "one connection sets up an exchange another listens"() {
+
+        setup:
+            def handler1 = new BrokerHandler(this.getConection())
+            def handler2 = new BrokerHandler(this.getConection())
+            def XCHANGE_NAME = 'testExchange'
+
+            def publishRoute = 'route.to.all'
+            def listenRoute = '*.to.all'
+
+            def testMsg1 = 'Message is off!'
+
+        when:
+            def present = handler1.doesExchangeExist(XCHANGE_NAME)
+        then:
+            println "the ok= ${present}"
+            assertFalse(present)
+
+        when:
+            def wrapper1 = handler1.getExchangeWrapper(XCHANGE_NAME, ExchangeType.topic, true)
+            println "private exchange queue name= ${wrapper1.queueName}"
+            def okNext = handler2.doesExchangeExist(XCHANGE_NAME)
+            println "the next ok= ${okNext}"
+        then:
+            assertTrue(okNext)
+        when:
+            def consumer = handler2.getExchangeConsumer(XCHANGE_NAME, ExchangeType.topic, listenRoute)
+            wrapper1.writeToExchange(publishRoute, testMsg1)
+        then:
+            assertEquals(testMsg1, new String(consumer.nextDelivery(100).body))
     }
 }
