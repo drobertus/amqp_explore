@@ -18,6 +18,7 @@ dependencies {
 
     compile (
         localGroovy(),
+        'org.codehaus.gpars:gpars:1.2.1',
         //'javax.jms:jms:1.1',
 
         //'org.apache.qpid:qpid-client:0.30',
@@ -37,7 +38,7 @@ dependencies {
         //'org.apache.qpid:qpid-broker-plugins-amqp-0-8-protocol:0.30',
         //'org.apache.qpid:qpid-broker-plugins-management-http:0.30',
         'org.spockframework:spock-core:0.7-groovy-2.0',
-        'org.codehaus.gpars:gpars:1.2.1'
+
 
 
     )

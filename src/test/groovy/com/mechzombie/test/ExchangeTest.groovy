@@ -48,10 +48,8 @@ class ExchangeTest extends Specification {
         def queueName = channel.queueDeclare().getQueue()
         log.info " ***** binding to exchange of -> ${TOPIC_NAME} ; ${queueName}"
 
-
         def ok = channel2.queueBind(queueName, TOPIC_NAME, '*.sports.news', null)
         log.info ("okay=${ok}")
-        //System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         QueueingConsumer consumer = new QueueingConsumer(channel2);
         channel2.basicConsume(queueName, true, consumer);
