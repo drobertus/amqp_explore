@@ -61,6 +61,13 @@ class BrokerHandler {
 
     }
 
+    QueueReader getQueueReader(String exchangeName, String queueToBind, String route, Class<QueueReader> classToMake) {
+        def consumer = getExchangeConsumer(exchangeName, queueToBind, route)
+        def instance = classToMake.newInstance()
+        instance.setConsumer(consumer)
+        return instance
+    }
+
     QueueingConsumer getExchangeConsumer(String exchangeName, String queueToBind, String route) {
 
         def channel = connection.createChannel()
