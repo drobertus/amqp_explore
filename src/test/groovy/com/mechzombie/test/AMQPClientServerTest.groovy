@@ -18,43 +18,43 @@ import spock.lang.Specification
 
 
 @Log
-class AMQPClientServerTest extends Specification {
+class AMQPClientServerTest extends AMQPTestSpecification {
 
-    def tmpFolder = Files.createTempDir()
-    Broker broker
-
-    def amqpPort = 9234
-    def httpPort = 9235
-
-    def qpidHomeDir = 'src/test/resources/'
-    def configFileName = "/test-config.json"
-
-    void setup() {
-        broker = new Broker();
-        def brokerOptions = new BrokerOptions()
-
-        File file = new File(qpidHomeDir)
-        String homePath = file.getAbsolutePath();
-        log.info(' qpid home dir=' + homePath)
-        log.info(' qpid work dir=' + tmpFolder.absolutePath)
-
-        brokerOptions.setConfigProperty('qpid.work_dir', tmpFolder.absolutePath);
-
-        brokerOptions.setConfigProperty('qpid.amqp_port',"${amqpPort}")
-        brokerOptions.setConfigProperty('qpid.http_port', "${httpPort}")
-        brokerOptions.setConfigProperty('qpid.home_dir', homePath);
-
-
-        brokerOptions.setInitialConfigurationLocation(homePath + configFileName)
-        broker.startup(brokerOptions)
-        log.info('broker started')
-
-    }
-
-    void cleanup() {
-        broker.shutdown()
-        FileUtils.deleteDirectory(tmpFolder)
-    }
+//    def tmpFolder = Files.createTempDir()
+//    Broker broker
+//
+//    def amqpPort = 9234
+//    def httpPort = 9235
+//
+//    def qpidHomeDir = 'src/test/resources/'
+//    def configFileName = "/test-config.json"
+//
+//    void setup() {
+//        broker = new Broker();
+//        def brokerOptions = new BrokerOptions()
+//
+//        File file = new File(qpidHomeDir)
+//        String homePath = file.getAbsolutePath();
+//        log.info(' qpid home dir=' + homePath)
+//        log.info(' qpid work dir=' + tmpFolder.absolutePath)
+//
+//        brokerOptions.setConfigProperty('qpid.work_dir', tmpFolder.absolutePath);
+//
+//        brokerOptions.setConfigProperty('qpid.amqp_port',"${amqpPort}")
+//        brokerOptions.setConfigProperty('qpid.http_port', "${httpPort}")
+//        brokerOptions.setConfigProperty('qpid.home_dir', homePath);
+//
+//
+//        brokerOptions.setInitialConfigurationLocation(homePath + configFileName)
+//        broker.startup(brokerOptions)
+//        log.info('broker started')
+//
+//    }
+//
+//    void cleanup() {
+//        broker.shutdown()
+//        FileUtils.deleteDirectory(tmpFolder)
+//    }
 
     def "test client connection" () {
         expect:

@@ -9,10 +9,9 @@ class ExchangeWrapper {
 
     Channel channel
     String exchangeName
-    //String queueName
 
     def writeToExchange(String route, byte[] msg) {
-       channel.basicPublish(exchangeName, route, null, msg)
+        channel.basicPublish(exchangeName, route, null, msg)
     }
 
     def writeToExchange(String route, String msg) {

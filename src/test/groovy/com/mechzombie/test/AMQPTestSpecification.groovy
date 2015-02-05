@@ -12,7 +12,7 @@ import spock.lang.Specification
 
 
 @Log
-class AMQPTestSpecification extends Specification {
+abstract class AMQPTestSpecification extends Specification {
 
     @Shared def tmpFolder = Files.createTempDir()
     @Shared Broker broker
@@ -24,7 +24,7 @@ class AMQPTestSpecification extends Specification {
     @Shared def qpidHomeDir = 'src/test/resources/'
     @Shared def configFileName = "/test-config.json"
 
-    Connection getConection() {
+    Connection getConnection() {
         if (!factory) {
             factory = new ConnectionFactory()
             factory.setUri(getConnectionURL())

@@ -14,16 +14,16 @@ import spock.lang.Specification
 
 
 @Log
-class ExchangeTest extends Specification {
+class ExchangeTest extends AMQPTestSpecification {
 
-    def tmpFolder = Files.createTempDir()
-    Broker broker
-
-    def amqpPort = 9234
-    def httpPort = 9235
-
-    def qpidHomeDir = 'src/test/resources/'
-    def configFileName = "/test-config.json"
+//    def tmpFolder = Files.createTempDir()
+//    Broker broker
+//
+//    def amqpPort = 9234
+//    def httpPort = 9235
+//
+//    def qpidHomeDir = 'src/test/resources/'
+//    def configFileName = "/test-config.json"
 
     def "test client connection" () {
         setup:
@@ -43,7 +43,7 @@ class ExchangeTest extends Specification {
         def channel2 = connection.createChannel();
         log.info " ***** declaring exchange of type topic -> ${TOPIC_NAME}"
         channel.exchangeDeclare(TOPIC_NAME, "topic", true)
-
+        
 
         def queueName = channel.queueDeclare().getQueue()
         log.info " ***** binding to exchange of -> ${TOPIC_NAME} ; ${queueName}"
@@ -80,32 +80,32 @@ class ExchangeTest extends Specification {
     }
 
 
-    void setup() {
-        broker = new Broker();
-        def brokerOptions = new BrokerOptions()
-
-        File file = new File(qpidHomeDir)
-        String homePath = file.getAbsolutePath();
-        log.info(' qpid home dir=' + homePath)
-        log.info(' qpid work dir=' + tmpFolder.absolutePath)
-
-        brokerOptions.setConfigProperty('qpid.work_dir', tmpFolder.absolutePath);
-
-        brokerOptions.setConfigProperty('qpid.amqp_port',"${amqpPort}")
-        brokerOptions.setConfigProperty('qpid.http_port', "${httpPort}")
-        brokerOptions.setConfigProperty('qpid.home_dir', homePath);
-
-
-        brokerOptions.setInitialConfigurationLocation(homePath + configFileName)
-        broker.startup(brokerOptions)
-        log.info('broker started')
-
-    }
-
-    void cleanup() {
-        broker.shutdown()
-        FileUtils.deleteDirectory(tmpFolder)
-    }
-
+//    void setup() {
+//        broker = new Broker();
+//        def brokerOptions = new BrokerOptions()
+//
+//        File file = new File(qpidHomeDir)
+//        String homePath = file.getAbsolutePath();
+//        log.info(' qpid home dir=' + homePath)
+//        log.info(' qpid work dir=' + tmpFolder.absolutePath)
+//
+//        brokerOptions.setConfigProperty('qpid.work_dir', tmpFolder.absolutePath);
+//
+//        brokerOptions.setConfigProperty('qpid.amqp_port',"${amqpPort}")
+//        brokerOptions.setConfigProperty('qpid.http_port', "${httpPort}")
+//        brokerOptions.setConfigProperty('qpid.home_dir', homePath);
+//
+//
+//        brokerOptions.setInitialConfigurationLocation(homePath + configFileName)
+//        broker.startup(brokerOptions)
+//        log.info('broker started')
+//
+//    }
+//
+//    void cleanup() {
+//        broker.shutdown()
+//        FileUtils.deleteDirectory(tmpFolder)
+//    }
+//
 
 }

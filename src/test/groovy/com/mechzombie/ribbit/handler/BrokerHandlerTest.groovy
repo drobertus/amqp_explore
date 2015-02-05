@@ -8,7 +8,6 @@ import static junit.framework.Assert.assertFalse
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
-
 @Log
 class BrokerHandlerTest extends AMQPTestSpecification {
 
@@ -16,13 +15,13 @@ class BrokerHandlerTest extends AMQPTestSpecification {
     def "set up an exchange and a client, make sure they are chained"() {
 
         setup:
-         def handler = new BrokerHandler(this.getConection())
-        ExchangeWrapper wrapper = handler.getExchangeWrapper('XCHANGE', ExchangeType.topic, true)
-        def queueToListen = 'queue1'
+            def handler = new BrokerHandler(this.getConnection())
+            ExchangeWrapper wrapper = handler.getExchangeWrapper('XCHANGE', ExchangeType.topic, true)
+            def queueToListen = 'queue1'
 
-        SimpleTestQueueReader stor = handler.getQueueReader( 'XCHANGE',queueToListen, '*.weather.us',
-            SimpleTestQueueReader.class)
-        new Thread(stor).start()
+            SimpleTestQueueReader stor = handler.getQueueReader( 'XCHANGE',queueToListen, '*.weather.us',
+                SimpleTestQueueReader.class)
+            new Thread(stor).start()
 
         when:
             wrapper.writeToExchange('news.weather.us', 'TaDA')
@@ -36,7 +35,6 @@ class BrokerHandlerTest extends AMQPTestSpecification {
             wrapper.writeToExchange('news.weather.ca', 'TEST')
 
         then:
-
             QueueingConsumer.Delivery msg3 = consumer2.nextDelivery(100)
             assertEquals 1, stor.receivedMessages.size()
 
@@ -47,8 +45,8 @@ class BrokerHandlerTest extends AMQPTestSpecification {
     def "one connection sets up an exchange another listens"() {
 
         setup:
-            def handler1 = new BrokerHandler(this.getConection())
-            def handler2 = new BrokerHandler(this.getConection())
+            def handler1 = new BrokerHandler(this.getConnection())
+            def handler2 = new BrokerHandler(this.getConnection())
             def XCHANGE_NAME = 'testExchange'
             def queueName = 'listener'
             def publishRoute = 'route.to.all'

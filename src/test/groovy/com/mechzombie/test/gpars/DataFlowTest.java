@@ -28,7 +28,7 @@ public class DataFlowTest {
             protected void doRun(final Object... objects) {
                 System.out.println("op1 do Run " + objects.length);
                 System.out.println("op " + objects[0]);
-                getOwningProcessor().bindOutput(2 * (Integer) objects[0]);
+                this.getOwningProcessor().bindOutput(2 * (Integer) objects[0]);
             }
         });
         final List secondOperatorInput = Arrays.asList(stream2, stream3);
@@ -46,13 +46,13 @@ public class DataFlowTest {
         stream3.bind(100);
         stream1.bind(3);
         Thread.sleep(500);
-        System.out.println("Result: " + stream4.getVal());
+        System.out.println("Result A: " + stream4.getVal());
 
         stream3.bind(200);
         stream3.bind(300);
         Thread.sleep(500);
-        System.out.println("Result: " + stream4.getVal());
-        System.out.println("Result: " + stream4.getVal());
+        System.out.println("Result B: " + stream4.getVal());
+        System.out.println("Result C: " + stream4.getVal());
 
         //op1.stop();
         //op2.stop();
